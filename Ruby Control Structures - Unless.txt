@@ -1,0 +1,8 @@
+def scoring(array)
+  # update_score of every user in the array unless the user is admin
+    array.each do |a| 
+        unless a.is_admin?
+            a.update_score
+        end
+    end
+end
