@@ -1,0 +1,23 @@
+def convert_temp(temp, input_scale:'celsius', output_scale:'celsius')
+    if input_scale==output_scale
+        return temp
+    end
+    if input_scale=='celsius' and output_scale=='kelvin'
+        return temp + 273
+    end
+    if input_scale=='celsius' and output_scale=='fahrenheit'
+        return temp*1.8+32
+    end
+    if input_scale=='fahrenheit' and output_scale=='celsius'
+        return (temp-32)/1.8
+    end
+    if input_scale=='fahrenheit' and output_scale=='kelvin'
+        return (temp+459.67)*5.0/9
+    end
+    if input_scale=='kelvin' and output_scale=='celsius'
+        return temp-273.15
+    end
+    if input_scale=='kelvin' and output_scale=='fahrenheit'
+        return temp*9.0/5-459.67
+    end
+end

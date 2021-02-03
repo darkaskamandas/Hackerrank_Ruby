@@ -1,0 +1,10 @@
+# Your code here
+def full_name(first,*middle,last)
+
+  full = []
+  full << first
+  middle.each { |s| full << s }
+  full << last
+  return full.join(' ')
+
+end
