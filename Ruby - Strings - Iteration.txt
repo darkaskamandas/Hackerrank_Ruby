@@ -1,0 +1,14 @@
+def count_multibyte_char(str)
+    count = 0
+    count2 = 0
+    str.each_char do |c|
+        count2 = 0
+        c.each_byte do |b|
+            count2+=1
+        end
+        if count2 >1
+            count+=1
+        end
+    end
+   count
+end

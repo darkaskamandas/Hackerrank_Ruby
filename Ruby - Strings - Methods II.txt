@@ -1,0 +1,10 @@
+def strike(str)
+    return "<strike>" << str << "</strike>"  
+end
+
+def mask_article(string, words)
+    words.each { |word| 
+        string = string.gsub(word, strike(word)) 
+        }
+    return string
+end

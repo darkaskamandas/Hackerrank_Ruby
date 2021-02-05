@@ -1,0 +1,7 @@
+def process_text(string_array)
+    new_string = ""
+    string_array.each {|string|
+        new_string = new_string.strip << " " << string.chomp.strip
+        }
+    return new_string
+end
