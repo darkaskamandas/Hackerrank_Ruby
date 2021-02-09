@@ -1,0 +1,8 @@
+def serial_average(string)
+    serial = string[0,3]
+    value1 = string[4,5].to_f
+    value2 = string[10,5].to_f
+    average = (value1 + value2)/2
+    new_string = serial << "-" << average.round(2).to_s 
+    return new_string
+end

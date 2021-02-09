@@ -1,0 +1,5 @@
+def transcode(input)
+
+    return input.force_encoding(Encoding::UTF_8)
+
+end
