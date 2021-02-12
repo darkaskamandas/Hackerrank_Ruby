@@ -1,0 +1,3 @@
+def take(ar,k=1)
+    ar.drop k;
+end
