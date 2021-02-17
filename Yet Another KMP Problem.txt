@@ -1,0 +1,48 @@
+# Enter your code here. Read input from STDIN. Print output to STDOUT
+a = gets.split.map(&:to_i)
+min_count = nil
+min_char = nil
+first = nil
+total = 0
+(0...26).each do |i|
+    total += a[i]
+    first = i if first == nil && a[i] > 0
+    if a[i] > 0 && (min_count == nil || a[i] < min_count)
+        min_count = a[i]
+        min_char = i
+    end
+end
+total -= a[min_char]
+if total == 0
+    puts ((min_char + "a".ord).chr)*a[min_char]
+elsif min_char == first
+    if min_count <= 2
+        result = ((min_char + "a".ord).chr)*a[min_char]
+        a[min_char] = 0
+        (0...26).each do |i|
+            result << ((i + "a".ord).chr)*a[i]
+        end
+        puts result
+    else
+        result = ((min_char + "a".ord).chr)*2
+        a[min_char] -= 2
+        (0...26).each do |i|
+            next if i == min_char
+            a[i].times do
+                result << (i + "a".ord).chr
+                if a[min_char] > 0
+                    result << (min_char + "a".ord).chr
+                    a[min_char] -= 1
+                end
+            end
+        end
+        puts result
+    end
+else
+    result = (min_char + "a".ord).chr
+    a[min_char] -= 1
+    (0...26).each do |i|
+        result << ((i + "a".ord).chr)*a[i]
+    end
+    puts result
+end

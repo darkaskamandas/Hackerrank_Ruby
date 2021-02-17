@@ -1,0 +1,74 @@
+#!/bin/ruby
+
+
+n = gets.strip.to_i
+$used=Array.new(n+1)
+$e=Array.new(n+1)
+mod=1000000007
+for a0 in (0..n-1-1)
+    u,v = gets.strip.split(' ')
+    u = u.to_i
+    v = v.to_i
+    $e[u]=[] if $e[u].nil?
+    $e[v]=[] if $e[v].nil?
+    $e[u]<<(v)
+    $e[v]<<(u)   
+end
+start=1
+order=Array.new
+q=Queue.new
+q<<(1)
+inq=Array.new
+inq[1]=true
+vars=Array.new
+while !q.empty?
+    c=q.pop
+    order<<(c)
+    for i in 0...$e[c].length
+        if inq[$e[c][i]].nil?
+            q<<($e[c][i])
+            inq[$e[c][i]]=true
+        end
+    end
+end
+order.reverse!
+for i in 0...order.length
+    c=order[i]
+    arr=$e[c]
+    if arr.length==1 and i!=order.length-1
+        vars[c]=[1,1,0,0]
+        $used[c]=true
+    elsif (arr.length==2 and i!=order.length-1) or (arr.length==1 and i==order.length-1)
+        arr2=nil
+        if $used[arr[0]].nil?
+            arr2=vars[arr[1]]
+        else
+            arr2=vars[arr[0]]
+        end
+        vars[c]=[arr2[2]%mod,arr2[3]%mod,(arr2[0]+arr2[2])%mod,(arr2[1]+arr2[3])%mod]
+        $used[c]=true
+    else
+        vbs=1
+        vrs=1
+        bs=1
+        rs=1
+        for j in 0...arr.length
+            next if $used[arr[j]].nil?
+            arr2=vars[arr[j]]
+            vbs*=arr2[3]
+            vrs*=arr2[2]
+            bs*=arr2[0]+arr2[2]+arr2[3]
+            rs*=arr2[1]+arr2[2]+arr2[3]
+        end
+        #print bs," ",order[i],"\n"
+        rs-=vrs
+        bs-=vbs
+        vars[c]=[vbs%mod,vrs%mod,bs%mod,rs%mod]
+        $used[c]=true
+    end 
+end
+#print order,"\n"
+#print vars,"\n"
+#puts vars[order[order.length-1]][2]
+last=order[order.length-1]
+puts (vars[last][2]+vars[last][3])%mod
