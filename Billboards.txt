@@ -1,0 +1,53 @@
+def second_solve gap, values
+   values = values[0..-1]
+   len = values.length
+   total = values.reduce { |x, y| x + y }
+   known = []
+
+   sorted_insert = lambda do |val|
+      low, high = 0, known.length
+      while low != high
+         mid = low + ((high - low) / 2)
+         if known[mid] > val
+            high = mid
+         else
+            low = mid + 1
+         end
+      end
+      known.insert(low, val)
+   end
+
+   sorted_delete = lambda do |val|
+      low, high = 0, known.length
+      while low != high
+         mid = low + ((high - low) / 2)
+         if known[mid] == val
+            known.delete_at(mid)
+            return
+         end
+         if known[mid] > val
+            high = mid
+         else
+            low = mid + 1
+         end
+      end
+   end
+
+   (len-gap-1...len).each do |i|
+      sorted_insert.call(values[i])
+   end
+   i = len - gap - 2
+   while i >= 0
+      new_best = values[i] + known[0]
+      sorted_delete.call(values[i + gap + 1])
+      sorted_insert.call(new_best)
+      values[i] = new_best
+      i -= 1
+   end
+
+   return total - known[0]
+end
+
+num, gap = STDIN.readline.split.map { |v| v.to_i }
+values = STDIN.read.split.map { |v| v.to_i }
+puts second_solve(gap, values)

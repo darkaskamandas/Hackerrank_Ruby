@@ -1,0 +1,53 @@
+#!/bin/ruby
+
+# Streaks of 3 or more of the same letter can be reduced to 2 characters because of duplication
+# Streaks of the same letter interrupted by just 1 letter will cause one duplicate ("ABA" -> "A" "B" "A")
+
+
+
+def uglyStrings(s)
+    substrings = Hash.new(false)
+    s = s.split("")
+    
+    (0..s.size - 2).each do |i|
+        a = s.dup
+        a.delete_at(i)
+        (i..a.size - 1).each do |j|
+            b = a.dup
+            b.delete_at(j)
+            substrings[b.join("")] = true
+        end
+    end
+    
+    substrings.keys.size
+end
+
+def beautifulStrings(s)
+    s = s.split("")
+    prev = s.first
+    prevprev = nil
+    n = 1 # num unique chars
+    d = 0 # num streaks of 2 or more
+    t = 0 # occurances of ABA
+    
+    s[1..-1].each do |c|
+        n += 1 unless c == prev
+        d += 1 if c == prev and c != prevprev
+        t += 1 if c == prevprev and c != prev
+        prevprev = prev
+        prev = c
+    end
+    
+    n * (n - 1) / 2 + d - t
+end
+
+fptr = File.open(ENV['OUTPUT_PATH'], 'w')
+
+s = gets.to_s.rstrip
+
+result = beautifulStrings s
+
+fptr.write result
+fptr.write "\n"
+
+fptr.close()
