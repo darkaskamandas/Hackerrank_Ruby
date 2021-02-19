@@ -1,0 +1,206 @@
+
+def makeboard(n)
+  board = ""
+  n.times do
+    board += (gets).chomp
+  end
+  return board
+end
+
+#??????????????????????????
+def subboard(m, n, board)
+  if m == 1 && n == 1 then
+    return [[0, 0]]
+  end
+  
+  subboardarray = Array.new
+
+  excludeline = '#' * m
+  currentline = board.slice(0, m)
+
+  bufferline = ""
+  flag = true
+  startlinenum = 0
+  1.upto(n - 1) do |j|
+    
+    bufferline = currentline
+    currentline = board.slice(m * j, m)
+    if bufferline == excludeline then
+      if j == n - 1 then
+        subboardarray.push [j, j]
+        break
+      else
+        next
+      end
+    end
+    
+    if flag then
+      startlinenum = j - 1
+      flag  = false
+    end
+
+
+    m.times do |i|
+      if board[m * j + i] == '.' then
+        break
+      end
+
+      if i - 1 >= 0 && board[m * j + (i - 1)] == '.' then
+        break
+      end
+
+      if i + 1 < m && board[m * j + (i + 1)] == '.' then
+        break
+      end
+      if i == m - 1 then
+        subboardarray.push [startlinenum, j - 1]
+        flag = true
+      end
+    end
+    if j == n - 1 && flag == false then
+      subboardarray.push [startlinenum, j]
+    end
+  end
+  return subboardarray
+end
+
+      
+
+#Queen???????????????????
+def exclude(i, j, m, n, board)
+  board[m * j + i] = 'Q'
+  x = i
+  y = j + 1
+  while y < n
+    index = m * y + x
+    if board[index] == '#' then
+      break
+    end
+    board[index] = 'm'
+    y += 1
+  end
+
+  x = i + 1
+  y = j
+  while x < m
+    index = m * y + x
+    if board[index] == '#' then
+      break
+    end
+    board[index] = 'm'
+    x += 1
+  end
+  
+  x = i - 1
+  y = j + 1
+  while x >= 0 && y < n
+    index = m * y + x
+    if board[index] == '#' then
+      break
+    end
+    board[index] = 'm'
+    x -= 1
+    y += 1
+  end
+
+  x = i + 1
+  y = j + 1
+  while x < m && y < n
+    index = m * y + x
+    if board[index] == '#' then
+      break
+    end
+    board[index] = 'm'
+    x += 1
+    y += 1
+  end
+
+  return board
+end
+
+#Queen???????????
+def searchpoint(m, n, index, board)
+  index.upto(board.length - 1) do |i|
+    if board[i] == '.' then
+      return i
+    end
+  end
+  return board.length
+end
+
+#Queen?????????????????????????????????????
+def patternnumber(m, n, index, board, memohash)
+
+  if board[index] == '#' then
+    return 0
+  end
+  
+  ans = 0
+  qnum = 0
+  board_size = board.length
+  key_string = board.slice(index, board_size)
+  indexarray = Array.new
+  boardarray = Array.new
+  indexarray.push index
+  boardarray.push board
+
+  index = searchpoint(m, n, index, board.clone)
+  board = exclude(index % m, (index / m).floor, m, n, board.clone)
+  ans += 1
+  qnum += 1
+  boardarray[qnum] = board.clone
+  indexarray[qnum] = index
+  
+  while true
+    index = searchpoint(m, n, index, board.clone)
+    sub_string = board.slice(index, board_size)
+    if memohash.key?(sub_string) then
+      ans += memohash[sub_string]
+      index += 1
+      next
+    end
+    
+    if index < board_size then
+      board = exclude(index % m, (index / m).floor, m, n, board.clone)
+      ans += 1
+      qnum += 1
+      boardarray[qnum] = board.clone
+      indexarray[qnum] = index
+    elsif qnum > 1 then
+      index = indexarray[qnum] + 1
+      qnum -= 1
+      board = boardarray[qnum]
+    else
+      break
+    end
+  end
+  memohash[key_string] = ans
+  return ans
+end
+
+
+#?????
+problem_number = (gets).to_i
+problem_number.times do
+  n, m = (gets).chomp.split(" ").map{|i| i.to_i}
+  probboard = makeboard(n)
+  answer = 0
+  ansarray = Array.new
+  subboardarray = subboard(m, n, probboard)
+  #p subboardarray
+  subboardarray.each do |sub|
+    linenum = sub[1] + 1 - sub[0]
+    board = probboard.slice(m * sub[0], m * linenum)
+    board_size = board.length
+    memohash = Hash.new
+    ans = 0
+    (linenum - 1).downto(0) do |j|
+      (m - 1).downto(0) do |i|
+        ans += patternnumber(m, linenum, m * j + i, board.clone, memohash)
+      end
+    end
+    answer = (answer + 1) * (ans + 1) - 1
+  end
+  
+  puts answer  % 1000000007
+end

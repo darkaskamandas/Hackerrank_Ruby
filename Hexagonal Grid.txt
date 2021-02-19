@@ -1,0 +1,58 @@
+def count_blacks(line)
+  counter = 0
+  line.each{|x|counter += 1 if x=='1'}
+  return counter
+end
+
+def has_valid_options?(arr)
+  arr.each.with_index{|x,i|
+    if i < arr.length - 1
+      return true if arr[i]=='0' and arr[i+1] == '0'
+    end
+    if i < arr.length - 2
+      return true if arr[i]=='0' and arr[i+2] == '0'
+    end
+  }
+  return false
+end
+
+def ditch_next_option!(arr)
+  (0..arr.length-1).each.with_index{|x, i|
+    if arr[i]=='0' and arr[i+1] == '0'
+      arr.slice!(i+1)
+      arr.slice!(i)
+      break
+    end
+    if i < arr.length-2 and arr[i] == '0' and arr[i+2] == '0'
+      arr.slice!(i+2)
+      arr.slice!(i)
+      break
+    end
+  }
+end
+
+puts gets.to_i.times.map {
+  size = gets.to_i
+  linea=gets.strip.split('')
+  lineb=gets.strip.split('')
+  blacks = count_blacks(linea) + count_blacks(lineb)
+  if blacks.odd?
+    "NO"
+  else
+    arr = (0...size*2).map{|x|
+      if x.even?
+        linea[x / 2]
+      else
+        lineb[(x-1) / 2]
+      end
+    }
+    while has_valid_options?(arr)
+      ditch_next_option!(arr)
+    end
+    if arr.index('0').nil?
+      "YES"
+    else
+      "NO"
+    end
+  end
+}.join("\n")

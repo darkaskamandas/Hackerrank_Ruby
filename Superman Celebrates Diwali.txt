@@ -1,0 +1,61 @@
+# Enter your code here. Read input from STDIN. Print output to STDOUT
+
+class Solver
+  def initialize(h, i, buildings)
+    @h, @i = h, i
+    @n = buildings.length
+    @buildings = buildings
+  end
+
+  def get_solution
+    result = 0
+    sums = Solver.create_matrix(@n, @h)
+    best = [0] * @h
+
+    @h.times do |floor|
+      @n.times do |building|
+
+        current = @buildings[building][floor]
+        if floor > 0
+          beneath = sums[building][floor - 1]
+
+          if floor >= @i && best[floor - @i] > beneath
+            current += best[floor - @i]
+          else
+            current += beneath
+          end
+        end
+
+        sums[building][floor] = current
+        best[floor] = current if best[floor] < current
+        result = current if result < current
+      end
+    end
+
+    result
+  end
+
+  def self.create_matrix(h, w)
+    result = []
+    h.times do
+      row = [0] * w
+      result.push(row)
+    end
+    result
+  end
+
+  def self.from_stdin
+    n, h, i = gets.split(" ").map(&:to_i)
+
+    buildings = self.create_matrix(n, h)
+
+    n.times do |i|
+      people = gets.split(" ").map(&:to_i)
+      1.upto(people[0]) { |j| buildings[i][people[j] - 1] += 1 }
+    end
+
+    Solver.new(h, i, buildings)
+  end
+end
+
+puts Solver.from_stdin.get_solution
